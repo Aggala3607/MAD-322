@@ -328,6 +328,7 @@ main.accumulate("Message","Something Went Wrong");
 return Response.status(status).entity(main.toString()).build();
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 PreparedStatement preparedStatement = null;
     @POST
 	@Path("/newCusto")
@@ -541,6 +542,9 @@ public Response selectBranch(@PathParam("id") int id)
     	return Response.status(status).entity(main.toString()).build();
     }
 >>>>>>> 1b0dd76c9fe17bfe4371dc00c30589a7e658f63a
+=======
+
+>>>>>>> 2407078580c9afd0dc3419f8be5eb655a973bd4b
 }
 
   
