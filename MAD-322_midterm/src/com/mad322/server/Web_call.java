@@ -144,7 +144,97 @@ public class Web_call
 		
 	}
 	
- 
- 
+@DELETE
+@Path("/deleteCusto/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectCustomer(@PathParam("id") String id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `customer` WHERE `CUST_ID` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
+ // INserting into Branch
+  
+  
+  PreparedStatement prparedStatement = null;
+    @POST
+	@Path("/newBranch")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createBranch(Branch branch)
+	{
+		MysqlConnection connection = new MysqlConnection();		
+		conn = connection.getConnection();
+		
+	try
+	{	
+		String query = "INSERT INTO `midterm`.`branch`(`BRANCH_ID`,`ADDRESS`,`CITY`,`NAME`,`STATE`,`ZIP_CODE`)"
+				+ "VALUES(?,?,?,?,?,?)";
+		
+		prparedStatement = conn.prepareStatement(query);		
+		prparedStatement.setInt(1, branch.getBRANCH_ID());
+		prparedStatement.setString(2, branch.getADDRESS());
+		prparedStatement.setString(3,branch.getCITY());
+		prparedStatement.setString(4,branch.getNAME());
+		prparedStatement.setString(5,branch.getSTATE());
+		prparedStatement.setString(6, branch.getZIP_CODE());		
+					
+		int rowCount = prparedStatement.executeUpdate();
+		
+		if(rowCount>0)
+		{
+			System.out.println("Record inserted Successfully! : "+rowCount);
+			
+			main.accumulate("Status", 201);
+			main.accumulate("Message", "Record Successfully added!");
+		}
+		
+		
+	}
+	     catch (SQLException e) {
+
+		main.accumulate("Status", 500);
+		main.accumulate("Message", e.getMessage());
+	}
+	     finally {
+		  try
+		  {
+		     	conn.close();
+		    	preparedStatement.close();
+		  }
+		       catch (SQLException e) {
+		    	System.out.println("Finally SQL Exception : "+e.getMessage());
+		  }
+	}		
+	return Response.status(201).entity(main.toString()).build();
+					
+	}
 }
   
