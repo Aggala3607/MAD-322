@@ -327,7 +327,97 @@ main.accumulate("Message","Something Went Wrong");
 
 return Response.status(status).entity(main.toString()).build();
 }
+@DELETE
+@Path("/deleteBranch/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectBranch(@PathParam("id") int id)
+{
+	MysqlConnection connection= new MysqlConnection();
+	conn= connection.getConnection();
+	Status status= Status.OK;
+	try
+	{
+		String query="DELETE FROM `branch` WHERE `BRANCH_ID` = "+id;
+		stmt= conn.createStatement();		
+		stmt.executeUpdate(query);
+		
+		int rowCount = stmt.executeUpdate(query);
+		if (rowCount > 0) 
+		{
+		status=Status.OK;
+		main.accumulate("status", status);
+		main.accumulate("Message","Data successfully updated !");
+		System.out.println("Data successfully deleted");
+		
+		}
+		
+		
+	}catch(SQLException e)
+	{
+		e.printStackTrace();
+		status=Status.NOT_MODIFIED;
+		main.accumulate("status",status);
+		main.accumulate("Message","Something Went Wrong");
+	}
+	
+	
+	return Response.status(status).entity(main.toString()).build();
+}
+// Updating the information in Employee table 
+    
+    PreparedStatement preparStatement = null;
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/editEmp/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateCustomer(@PathParam("id")int id,Employee emp)
+    {
+    	MysqlConnection connection= new MysqlConnection();
+    	conn= connection.getConnection();
+    	Status status =Status.OK;
+    	try {
+    		String query ="UPDATE `employee` SET `EMP_ID` =?,`END_DATE` =?,`FIRST_NAME` =?,`LAST_NAME` =?, `START_DATE` =?,`TITLE` =?,`ASSIGNED_BRANCH_ID` =?,`DEPT_ID` =?,`SUPERIOR_EMP_ID` =? WHERE `EMP_ID` ="+id;
+    		
+    
+    		preparStatement = conn.prepareStatement(query);   		
+    		   		
+    		preparStatement.setInt(1, emp.getEMP_ID());
+    		preparStatement.setString(2, emp.getEND_DATE());
+    		preparStatement.setString(3,emp.getFIRST_NAME());
+    		preparStatement.setString(4,emp.getLAST_NAME());
+    		preparStatement.setString(5,emp.getSTART_DATE());
+    		preparStatement.setString(6, emp.getTITLE());
+    		preparStatement.setInt(7, emp.getASSIGNED_BRANCH_ID());  
+    		preparStatement.setInt(8, emp.getDEPT_ID());
+    		preparStatement.setInt(9, emp.getSUPERIOR_EMP_ID());
+    		
 
+    		int rowCount = preparStatement.executeUpdate();
+    		
+    		if (rowCount > 0) 
+    		{
+    		status=Status.OK;
+    		main.accumulate("status", status);
+    		main.accumulate("Message","Data successfully updated !");
+    		
+    		}
+    		else
+    		{
+    			status=Status.NOT_MODIFIED;
+    			main.accumulate("status", status);
+    			main.accumulate("Message","Something Went Wrong");
+    						
+    		}
+    		
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    		status=Status.NOT_MODIFIED;
+    		main.accumulate("status", status);
+    		main.accumulate("Message","Something Went Wrong");
+    	}
+    	
+    	return Response.status(status).entity(main.toString()).build();
+    }
 }
 
   
