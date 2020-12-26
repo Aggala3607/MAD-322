@@ -236,5 +236,98 @@ public Response selectCustomer(@PathParam("id") String id)
 	return Response.status(201).entity(main.toString()).build();
 					
 	}
+// Displaying from employees whose department id is given from parameters
+  @GET
+  @Path("/teja/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response teja(@PathParam("id")int id)
+  {
+ 
+ 
+ MysqlConnection connection = new MysqlConnection();
+  conn = connection.getConnection();
+ 
+  try
+  {
+stmt = conn.createStatement();
+rs = stmt.executeQuery("select * from employee where DEPT_ID = "+id+";");
+
+while(rs.next())
+{
+ child = new JSONObject();
+ 
+ 
+ child.accumulate("Employee Name", rs.getString("FIRST_NAME"));
+ child.accumulate("Department ID", rs.getString("DEPT_ID"));
+
+ 
+ jsArray.put(child);
 }
+
+main.put("employee", jsArray);
+
+  }catch(SQLException e)
+{
+System.out.println("SQL Exception : +e.getMessage");
+}
+finally
+{
+try
+{
+conn.close();
+stmt.close();
+rs.close();
+}
+catch (SQLException e)
+{
+System.out.println("Finally Block SQL Exception : "+e.getMessage());
+}
+
+}
+
+return Response.status(200).entity(main.toString()).build();
+   
+
+  }
+// Deleting record from the Employee table
+
+@DELETE
+@Path("/deleteEmp/{id}")
+@Produces(MediaType.APPLICATION_JSON)
+public Response selectEmployee(@PathParam("id") int id)
+{
+MysqlConnection connection= new MysqlConnection();
+conn= connection.getConnection();
+Status status= Status.OK;
+try
+{
+String query="DELETE FROM `employee` WHERE `EMP_ID` = "+id;
+stmt= conn.createStatement();
+stmt.executeUpdate(query);
+
+int rowCount = stmt.executeUpdate(query);
+if (rowCount > 0)
+{
+status=Status.OK;
+main.accumulate("status", status);
+main.accumulate("Message","Data successfully updated !");
+System.out.println("Data successfully deleted");
+
+}
+
+
+}catch(SQLException e)
+{
+e.printStackTrace();
+status=Status.NOT_MODIFIED;
+main.accumulate("status",status);
+main.accumulate("Message","Something Went Wrong");
+}
+
+
+return Response.status(status).entity(main.toString()).build();
+}
+
+}
+
   
